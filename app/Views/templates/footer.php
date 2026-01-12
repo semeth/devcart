@@ -1,9 +1,9 @@
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; <?= date('Y') ?> DevCart. All rights reserved.</p>
+    <footer class="bg-dark text-light mt-5 py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; <?= date('Y') ?> DevCart. All rights reserved.</p>
         </div>
     </footer>
 
@@ -13,7 +13,7 @@
 
     <script>
         // Update cart count
-        fetch('/cart/count')
+        fetch('<?= site_url('cart/count') ?>')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('cart-count').textContent = data.count || 0;

@@ -7,32 +7,54 @@
     <link rel="stylesheet" href="<?= base_url('assets/bootstrap/css/bootstrap.min.css') ?>">
 </head>
 <body>
-    <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
-                <div class="navbar-brand">
-                    <a href="/" style="text-decoration: none;">DevCart</a>
-                </div>
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/products">Products</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/categories">Categories</a></li>
+            <a class="navbar-brand" href="<?= site_url('/') ?>">DevCart</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= site_url('/') ?>">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= site_url('products') ?>">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= site_url('categories') ?>">Categories</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= site_url('cart') ?>">
+                            Cart <span class="badge bg-secondary" id="cart-count">0</span>
+                        </a>
+                    </li>
                     <?php if (session()->has('user_id')): ?>
-                        <li class="nav-item"><a class="nav-link active" href="/cart">Cart <span class="badge text-bg-secondary" id="cart-count">0</span></a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/orders">My Orders</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= site_url('orders') ?>">My Orders</a>
+                        </li>
                         <?php if (session()->get('user_role') === 'admin'): ?>
-                            <li class="nav-item"><a class="nav-link active" href="/admin">Admin</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= site_url('admin') ?>">Admin</a>
+                            </li>
                         <?php endif; ?>
-                        <li class="nav-item"><a class="nav-link active" href="/logout">Logout (<?= esc(session()->get('user_name')) ?>)</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= site_url('logout') ?>">Logout (<?= esc(session()->get('user_name')) ?>)</a>
+                        </li>
                     <?php else: ?>
-                        <li class="nav-item"><a class="nav-link active" href="/cart">Cart <span class="cart-count" id="cart-count">0</span></a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/login">Login</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/register">Register</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= site_url('login') ?>">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= site_url('register') ?>">Register</a>
+                        </li>
                     <?php endif; ?>
                 </ul>
-            </nav>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <main>
         <div class="container">
@@ -41,5 +63,5 @@
             <?php endif; ?>
             
             <?php if (session()->has('error')): ?>
-                <div class="alert alert-error"><?= esc(session('error')) ?></div>
+                <div class="alert alert-danger"><?= esc(session('error')) ?></div>
             <?php endif; ?>

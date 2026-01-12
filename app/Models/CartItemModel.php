@@ -65,7 +65,7 @@ class CartItemModel extends Model
     public function getCartWithProducts($userId = null, $sessionId = null)
     {
         $builder = $this->db->table('cart_items');
-        $builder->select('cart_items.*, products.name, products.slug, products.image, products.stock_quantity, products.stock_status');
+        $builder->select('cart_items.*, products.name, products.slug, products.sku, products.image, products.stock_quantity, products.stock_status');
         $builder->join('products', 'products.id = cart_items.product_id');
         
         if ($userId) {
@@ -73,6 +73,9 @@ class CartItemModel extends Model
         } elseif ($sessionId) {
             $builder->where('cart_items.session_id', $sessionId);
             $builder->where('cart_items.user_id', null);
+        } else {
+            // Return empty array if no user or session
+            return [];
         }
         
         return $builder->get()->getResultArray();
