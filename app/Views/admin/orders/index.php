@@ -1,9 +1,7 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <h1 class="mb-4">Manage Orders</h1>
-
-    <a href="<?= site_url('admin') ?>" class="btn btn-secondary mb-3">← Back to Dashboard</a>
 
     <?php if (empty($orders)): ?>
         <div class="alert alert-info">
@@ -45,4 +43,6 @@
     <?php endif; ?>
 </div>
 
-<?= $this->include('templates/footer') ?>
+</div>
+
+<?= $this->include('admin/templates/footer') ?>

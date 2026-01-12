@@ -1,12 +1,12 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Manage Categories</h1>
-        <a href="<?= site_url('admin/categories/new') ?>" class="btn btn-primary">Add Category</a>
+        <a href="<?= site_url('admin/categories/new') ?>" class="btn btn-primary">
+            <span class="icon">➕</span> Add Category
+        </a>
     </div>
-
-    <a href="<?= site_url('admin') ?>" class="btn btn-secondary mb-3">← Back to Dashboard</a>
 
     <?php if (empty($categories)): ?>
         <div class="alert alert-info">
@@ -21,7 +21,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Slug</th>
-                                <th>Parent</th>
+                                <!-- <th>Parent</th> -->
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -29,15 +29,21 @@
                         <tbody>
                             <?php foreach ($categories as $category): ?>
                                 <tr>
-                                    <td><?= esc($category['name']) ?></td>
-                                    <td><code><?= esc($category['slug']) ?></code></td>
                                     <td>
-                                        <?php if (!empty($category['parent_name'])): ?>
-                                            <?= esc($category['parent_name']) ?>
+                                        <?php if (!empty($category['hierarchy_path'])): ?>
+                                            <?= esc($category['hierarchy_path']) ?>
+                                        <?php else: ?>
+                                            <?= esc($category['name']) ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><code><?= esc($category['slug']) ?></code></td>
+                                    <!-- <td>
+                                        <?php if (!empty($category['parent_id'])): ?>
+                                            <span class="text-muted">Subcategory</span>
                                         <?php else: ?>
                                             <span class="text-muted">—</span>
                                         <?php endif; ?>
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <?php if ($category['is_active']): ?>
                                             <span class="badge bg-success">Active</span>
@@ -59,4 +65,6 @@
     <?php endif; ?>
 </div>
 
-<?= $this->include('templates/footer') ?>
+</div>
+
+<?= $this->include('admin/templates/footer') ?>

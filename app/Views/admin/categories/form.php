@@ -1,11 +1,9 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <div class="row">
         <div class="col-12">
             <h1 class="mb-4"><?= $category ? 'Edit Category' : 'Add New Category' ?></h1>
-            
-            <a href="<?= site_url('admin/categories') ?>" class="btn btn-secondary mb-3">← Back to Categories</a>
 
             <form method="post" action="<?= site_url('admin/categories/save' . ($category ? '/' . $category['id'] : '')) ?>" enctype="multipart/form-data">
                 <?= csrf_field() ?>
@@ -119,4 +117,6 @@
     </div>
 </div>
 
-<?= $this->include('templates/footer') ?>
+</div>
+
+<?= $this->include('admin/templates/footer') ?>

@@ -120,6 +120,52 @@
                         </div>
                     </div>
                 </div>
+
+                <?php if (!empty($shippingOptions)): ?>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Shipping Method</h5>
+                        </div>
+                        <div class="card-body">
+                            <?php $firstShipping = true; foreach ($shippingOptions as $option): ?>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input shipping-option" type="radio" name="shipping_method" id="shipping_<?= esc($option['extension_code'] . '_' . $option['code']) ?>" value="<?= esc($option['extension_code'] . ':' . $option['code']) ?>" data-cost="<?= esc($option['cost']) ?>" <?= $firstShipping ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="shipping_<?= esc($option['extension_code'] . '_' . $option['code']) ?>">
+                                        <strong><?= esc($option['name']) ?></strong>
+                                        <span class="text-muted"> - $<?= number_format($option['cost'], 2) ?></span>
+                                        <?php if (!empty($option['estimated_days'])): ?>
+                                            <br><small class="text-muted">Estimated delivery: <?= $option['estimated_days'] ?> days</small>
+                                        <?php endif; ?>
+                                        <?php if (!empty($option['description'])): ?>
+                                            <br><small class="text-muted"><?= esc($option['description']) ?></small>
+                                        <?php endif; ?>
+                                    </label>
+                                </div>
+                            <?php $firstShipping = false; endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($paymentOptions)): ?>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Payment Method</h5>
+                        </div>
+                        <div class="card-body">
+                            <?php $firstPayment = true; foreach ($paymentOptions as $option): ?>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="payment_<?= esc($option['code']) ?>" value="<?= esc($option['code']) ?>" <?= $firstPayment ? 'checked' : '' ?> required>
+                                    <label class="form-check-label" for="payment_<?= esc($option['code']) ?>">
+                                        <strong><?= esc($option['name']) ?></strong>
+                                        <?php if (!empty($option['description'])): ?>
+                                            <br><small class="text-muted"><?= esc($option['description']) ?></small>
+                                        <?php endif; ?>
+                                    </label>
+                                </div>
+                            <?php $firstPayment = false; endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="col-md-4">
@@ -149,11 +195,11 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Shipping:</span>
-                                <span>$<?= number_format($totals['shipping_amount'], 2) ?></span>
+                                <span id="shipping-amount">$<?= number_format($totals['shipping_amount'], 2) ?></span>
                             </div>
                             <div class="d-flex justify-content-between fw-bold fs-5 mt-3 pt-3 border-top">
                                 <span>Total:</span>
-                                <span>$<?= number_format($totals['total_amount'], 2) ?></span>
+                                <span id="total-amount">$<?= number_format($totals['total_amount'], 2) ?></span>
                             </div>
                         </div>
 
@@ -164,5 +210,35 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const shippingOptions = document.querySelectorAll('.shipping-option');
+    const shippingAmountElement = document.getElementById('shipping-amount');
+    const totalAmountElement = document.getElementById('total-amount');
+    const subtotal = <?= $subtotal ?>;
+
+    function updateTotals() {
+        const selectedShipping = document.querySelector('.shipping-option:checked');
+        const shippingCost = selectedShipping ? parseFloat(selectedShipping.getAttribute('data-cost')) : 0;
+        const tax = 0; // Tax calculation can be added later
+        const total = subtotal + shippingCost + tax;
+
+        if (shippingAmountElement) {
+            shippingAmountElement.textContent = '$' + shippingCost.toFixed(2);
+        }
+        if (totalAmountElement) {
+            totalAmountElement.textContent = '$' + total.toFixed(2);
+        }
+    }
+
+    shippingOptions.forEach(function(option) {
+        option.addEventListener('change', updateTotals);
+    });
+
+    // Update totals on page load
+    updateTotals();
+});
+</script>
 
 <?= $this->include('templates/footer') ?>

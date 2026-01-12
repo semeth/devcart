@@ -6,6 +6,33 @@
         <p class="lead">Your one-stop shop for all your needs!</p>
     </div>
 
+    <?php if (!empty($categories)): ?>
+        <h2 class="mb-4">Shop by Category</h2>
+        <div class="row g-4 mb-4">
+            <?php foreach ($categories as $category): ?>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100">
+                        <?php if ($category['image']): ?>
+                            <img src="<?= base_url($category['image']) ?>" class="card-img-top" alt="<?= esc($category['name']) ?>" style="height: 200px; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">
+                                <a href="<?= site_url('categories/' . $category['slug']) ?>" class="text-decoration-none text-dark">
+                                    <?= esc($category['name']) ?>
+                                </a>
+                            </h5>
+                            <a href="<?= site_url('categories/' . $category['slug']) ?>" class="btn btn-primary mt-auto">Browse</a>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
     <?php if (!empty($featuredProducts)): ?>
         <h2 class="mb-4">Featured Products</h2>
         <div class="row g-4 mb-5">
@@ -41,32 +68,6 @@
         </div>
     <?php endif; ?>
 
-    <?php if (!empty($categories)): ?>
-        <h2 class="mb-4">Shop by Category</h2>
-        <div class="row g-4">
-            <?php foreach ($categories as $category): ?>
-                <div class="col-md-4 col-lg-3">
-                    <div class="card h-100">
-                        <?php if ($category['image']): ?>
-                            <img src="<?= base_url($category['image']) ?>" class="card-img-top" alt="<?= esc($category['name']) ?>" style="height: 200px; object-fit: cover;">
-                        <?php else: ?>
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                                <span class="text-muted">No Image</span>
-                            </div>
-                        <?php endif; ?>
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">
-                                <a href="<?= site_url('categories/' . $category['slug']) ?>" class="text-decoration-none text-dark">
-                                    <?= esc($category['name']) ?>
-                                </a>
-                            </h5>
-                            <a href="<?= site_url('categories/' . $category['slug']) ?>" class="btn btn-primary mt-auto">Browse</a>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
 </div>
 
 <?= $this->include('templates/footer') ?>

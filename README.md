@@ -375,7 +375,44 @@ Logs are available in `writable/logs/`
 
 ## 📝 Changelog
 
-### Version 0.0.10 (Current)
+### Version 0.1.0 (Current) - Extension System Release
+- ✅ **Extension System Implementation**
+  - Created generic extension system for payment and shipping methods
+  - Implemented ExtensionManager service for dynamic extension loading
+  - Created base interfaces and abstract classes for extensions
+  - Added database tables for extensions and extension settings
+  - Implemented settings encryption for sensitive data
+- ✅ **Payment Extensions**
+  - Implemented Cash on Delivery (COD) payment method
+  - Created payment extension interface and base implementation
+  - Admin interface for payment extension configuration
+- ✅ **Shipping Extensions**
+  - Created Flat Rate, Weight-Based, and Free Shipping extensions (dummy implementations ready for development)
+  - Implemented shipping extension interface with cost calculation
+  - Admin interface for shipping extension configuration
+- ✅ **Checkout Integration**
+  - Integrated active extensions into checkout process
+  - Shipping methods now display based on extension active state
+  - Payment methods now display based on extension active state
+  - Dynamic shipping cost calculation and display
+  - JavaScript updates for real-time total calculation
+- ✅ **Admin Panel Improvements**
+  - Created new sidebar navigation with categorized menu items
+  - Added icons to admin menu for better identification
+  - Improved admin layout with responsive sidebar
+  - Added Extensions management section in admin panel
+  - Extension configuration interface with dynamic form generation
+  - Extension enable/disable functionality
+- ✅ **Category Management Enhancements**
+  - Categories now display with full hierarchy path (e.g., "Electronics >> Phones")
+  - Categories sorted by hierarchy path for better organization
+  - Added `getCategoryPath()` method to CategoryModel for recursive hierarchy building
+- ✅ **Database Schema Updates**
+  - Added `extensions` table for extension management
+  - Added `extension_settings` table for extension configuration
+  - Added `shipping_method` field to orders table
+
+### Version 0.0.10
 - ✅ Fixed product CRUD operations (add/update) to match category functionality
 - ✅ Fixed product image upload and database update synchronization
 - ✅ Updated SKU validation to allow colons, dashes, and underscores (`regex_match[/^[a-zA-Z0-9\-_:]+$/]`)

@@ -29,4 +29,16 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+
+    /**
+     * Extension Manager Service
+     */
+    public static function extensionManager($getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('extensionManager');
+        }
+
+        return new \App\Services\ExtensionManager();
+    }
 }

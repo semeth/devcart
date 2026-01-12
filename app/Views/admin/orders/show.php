@@ -1,9 +1,8 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Order #<?= esc($order['order_number']) ?></h1>
-        <a href="<?= site_url('admin/orders') ?>" class="btn btn-secondary">← Back to Orders</a>
     </div>
 
     <div class="row">
@@ -214,4 +213,4 @@
     </div>
 </div>
 
-<?= $this->include('templates/footer') ?>
+<?= $this->include('admin/templates/footer') ?>

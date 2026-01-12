@@ -60,6 +60,10 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('orders', 'AdminController::orders');
     $routes->get('orders/(:segment)', 'AdminController::orderShow/$1');
     $routes->post('orders/(:segment)/update', 'AdminController::orderUpdateStatus/$1');
+    $routes->get('extensions', 'AdminController::extensions');
+    $routes->get('extensions/(:segment)/(:segment)/configure', 'AdminController::extensionConfigure/$1/$2');
+    $routes->post('extensions/(:segment)/(:segment)/configure', 'AdminController::extensionConfigure/$1/$2');
+    $routes->get('extensions/(:segment)/(:segment)/toggle', 'AdminController::extensionToggle/$1/$2');
 });
 
 // Legacy routes (can be removed if not needed)

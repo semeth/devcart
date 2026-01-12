@@ -145,4 +145,35 @@ class CategoryModel extends Model
         
         return array_unique($categoryIds);
     }
+
+    /**
+     * Get the full category hierarchy path (breadcrumb)
+     * Returns a string like "Electronics >> Phones" or "Furniture >> Sofas >> Recliners"
+     * 
+     * @param int $categoryId The category ID
+     * @param string $separator The separator between category names (default: " >> ")
+     * @return string The hierarchy path
+     */
+    public function getCategoryPath(int $categoryId, string $separator = ' >> '): string
+    {
+        $path = [];
+        $category = $this->find($categoryId);
+        
+        if (!$category) {
+            return '';
+        }
+        
+        // Recursively build the path from root to current category
+        $current = $category;
+        while ($current) {
+            array_unshift($path, $current['name']);
+            if ($current['parent_id']) {
+                $current = $this->find($current['parent_id']);
+            } else {
+                $current = null;
+            }
+        }
+        
+        return implode($separator, $path);
+    }
 }
