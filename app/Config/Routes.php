@@ -46,7 +46,17 @@ $routes->get('orders/(:segment)', 'OrderController::show/$1');
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'AdminController::index');
     $routes->get('products', 'AdminController::products');
+    $routes->get('products/new', 'AdminController::productForm');
+    $routes->get('products/edit/(:num)', 'AdminController::productForm/$1');
+    $routes->post('products/save', 'AdminController::productSave');
+    $routes->post('products/save/(:num)', 'AdminController::productSave/$1');
+    $routes->get('products/delete/(:num)', 'AdminController::productDelete/$1');
     $routes->get('categories', 'AdminController::categories');
+    $routes->get('categories/new', 'AdminController::categoryForm');
+    $routes->get('categories/edit/(:num)', 'AdminController::categoryForm/$1');
+    $routes->post('categories/save', 'AdminController::categorySave');
+    $routes->post('categories/save/(:num)', 'AdminController::categorySave/$1');
+    $routes->get('categories/delete/(:num)', 'AdminController::categoryDelete/$1');
     $routes->get('orders', 'AdminController::orders');
 });
 

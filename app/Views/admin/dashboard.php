@@ -1,74 +1,84 @@
 <?= $this->include('templates/header') ?>
 
-<h1>Admin Dashboard</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
 
-<div class="row" style="margin-top: 2rem;">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h3>Total Products</h3>
-                <p class="text-info fs-2 fw-bold"><?= $stats['total_products'] ?></p>
-                <p><small>Active: <?= $stats['active_products'] ?></small></p>
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Products</h5>
+                    <p class="text-primary fs-2 fw-bold mb-1"><?= $stats['total_products'] ?></p>
+                    <small class="text-muted">Active: <?= $stats['active_products'] ?></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Orders</h5>
+                    <p class="text-success fs-2 fw-bold mb-1"><?= $stats['total_orders'] ?></p>
+                    <small class="text-muted">Pending: <?= $stats['pending_orders'] ?></small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <p class="text-danger fs-2 fw-bold mb-1"><?= $stats['total_users'] ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="text-warning fs-2 fw-bold mb-1">$<?= number_format($stats['total_revenue'], 2) ?></p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h3>Total Orders</h3>
-                <p class="text-success fs-2 fw-bold"><?= $stats['total_orders'] ?></p>
-                <p><small>Pending: <?= $stats['pending_orders'] ?></small></p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h3>Total Users</h3>
-                <p class="text-danger fs-2 fw-bold"><?= $stats['total_users'] ?></p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h3>Total Revenue</h3>
-                <p class="text-warning fs-2 fw-bold">$<?= number_format($stats['total_revenue'], 2) ?></p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<h2 style="margin-top: 3rem;">Recent Orders</h2>
-<?php if (empty($recentOrders)): ?>
-    <p>No recent orders.</p>
-<?php else: ?>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
-        <thead>
-            <tr style="border-bottom: 2px solid #ddd;">
-                <th style="padding: 1rem; text-align: left;">Order Number</th>
-                <th style="padding: 1rem; text-align: left;">Date</th>
-                <th style="padding: 1rem; text-align: left;">Status</th>
-                <th style="padding: 1rem; text-align: left;">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($recentOrders as $order): ?>
-                <tr style="border-bottom: 1px solid #ddd;">
-                    <td style="padding: 1rem;"><?= esc($order['order_number']) ?></td>
-                    <td style="padding: 1rem;"><?= date('M d, Y', strtotime($order['created_at'])) ?></td>
-                    <td style="padding: 1rem;"><?= esc(ucfirst($order['status'])) ?></td>
-                    <td style="padding: 1rem;">$<?= number_format($order['total_amount'], 2) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-<?php endif; ?>
+    <h2 class="mb-4">Recent Orders</h2>
+    <?php if (empty($recentOrders)): ?>
+        <div class="alert alert-info">
+            <p class="mb-0">No recent orders.</p>
+        </div>
+    <?php else: ?>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($recentOrders as $order): ?>
+                                <tr>
+                                    <td><?= esc($order['order_number']) ?></td>
+                                    <td><?= date('M d, Y', strtotime($order['created_at'])) ?></td>
+                                    <td><span class="badge bg-primary"><?= esc(ucfirst($order['status'])) ?></span></td>
+                                    <td>$<?= number_format($order['total_amount'], 2) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
 
-<div style="margin-top: 2rem;">
-    <a href="/admin/products" class="btn btn-primary">Manage Products</a>
-    <a href="/admin/categories" class="btn btn-primary">Manage Categories</a>
-    <a href="/admin/orders" class="btn btn-primary">Manage Orders</a>
+    <div class="mt-4">
+        <a href="<?= site_url('admin/products') ?>" class="btn btn-primary">Manage Products</a>
+        <a href="<?= site_url('admin/categories') ?>" class="btn btn-primary">Manage Categories</a>
+        <a href="<?= site_url('admin/orders') ?>" class="btn btn-primary">Manage Orders</a>
+    </div>
 </div>
 
 <?= $this->include('templates/footer') ?>
