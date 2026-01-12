@@ -1,10 +1,11 @@
-DevCart is an eCommerce platform built with CodeIgniter 4, designed as a modular, extensible foundation for online stores.
+## DevCart 
+is an eCommerce platform built with CodeIgniter 4, designed as a modular, extensible foundation for online stores.
 The project is currently under active development.
 
 ⚠️ Status: Early development — not production ready
 
 
-🚀 Features (Planned & In Progress)
+# 🚀 Features (Planned & In Progress)
 
 Modular eCommerce architecture
 
@@ -25,7 +26,7 @@ Payment gateway integration (planned)
 Shipping & tax configuration (planned)
 
 
-🛠️ Tech Stack
+# 🛠️ Tech Stack
 
 Framework: CodeIgniter 4
 
