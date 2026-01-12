@@ -32,12 +32,13 @@ A modern, feature-rich eCommerce platform built with **CodeIgniter 4**, designed
 
 - **Product Management**
   - Full CRUD operations for products
-  - Product categories with hierarchical support
+  - Product categories with hierarchical support and full path display
   - Image uploads for products and categories
   - Stock management
   - Product variants (price, compare price, cost price)
   - SEO-friendly URLs (slugs)
   - Featured products
+  - Products from subcategories display on parent category pages
 
 - **Shopping Cart**
   - Guest and registered user cart support
@@ -49,9 +50,32 @@ A modern, feature-rich eCommerce platform built with **CodeIgniter 4**, designed
 - **Checkout & Orders**
   - Complete checkout process
   - Billing and shipping address management
+  - Shipping method selection (from active extensions)
+  - Payment method selection (from active extensions)
+  - Dynamic shipping cost calculation
+  - Real-time order total updates
   - Order tracking
   - Order history for customers
   - Order management for admins
+
+- **Extension System** ⭐ (New in 0.1.0)
+  - **Generic extension architecture** for payment and shipping methods
+  - **Payment Extensions**
+    - Cash on Delivery (COD) - fully implemented
+    - Extension system ready for Stripe, PayPal, and other payment gateways
+  - **Shipping Extensions**
+    - Flat Rate Shipping (ready for development)
+    - Weight-Based Shipping (ready for development)
+    - Free Shipping (ready for development)
+  - **Admin Extension Management**
+    - Enable/disable extensions
+    - Configure extension settings with dynamic forms
+    - Settings encryption for sensitive data (API keys, passwords)
+    - Extension status management
+  - **Checkout Integration**
+    - Active extensions automatically appear in checkout
+    - Shipping costs calculated dynamically
+    - Extensions checked for availability based on order details
 
 - **User Authentication**
   - User registration
@@ -61,34 +85,38 @@ A modern, feature-rich eCommerce platform built with **CodeIgniter 4**, designed
   - Session management
 
 - **Admin Dashboard**
-  - Comprehensive admin panel
+  - Comprehensive admin panel with sidebar navigation
   - Product management interface
-  - Category management
+  - Category management with hierarchy display
   - Order management
+  - Extension management (new)
   - Dashboard statistics
   - User management
+  - Categorized menu with icons
+  - Responsive sidebar navigation
 
 - **Frontend**
   - Responsive Bootstrap 5 design
   - Modern, clean UI/UX
   - Product catalog with search
-  - Category browsing
+  - Category browsing with hierarchical navigation
   - Product detail pages
   - Shopping cart interface
+  - Sticky footer layout
 
 ### 🚀 Planned Features
 
-- Payment gateway integration (Stripe, PayPal)
+- Payment gateway integration (Stripe, PayPal) - Can be added as extensions
 - Email notifications
-- Advanced shipping options
 - Tax calculation system
+- Full order processing integration with extensions
 - Product reviews and ratings
 - Wishlist functionality
 - Coupon/Discount system
 - Multi-currency support
 - Advanced reporting and analytics
 - Inventory alerts
-- Product image gallery
+- Product image gallery (multiple images per product)
 - Advanced search and filtering
 
 ---
