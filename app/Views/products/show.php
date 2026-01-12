@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-6">
             <?php if ($product['image']): ?>
-                <img src="<?= esc($product['image']) ?>" class="img-fluid rounded" alt="<?= esc($product['name']) ?>">
+                <img src="<?= base_url($product['image']) ?>" class="img-fluid rounded" alt="<?= esc($product['name']) ?>">
             <?php else: ?>
                 <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
                     <span class="text-muted">No Image</span>
@@ -15,7 +15,7 @@
                 <div class="row g-2 mt-2">
                     <?php foreach ($product['gallery'] as $image): ?>
                         <div class="col-3">
-                            <img src="<?= esc($image) ?>" class="img-thumbnail" alt="">
+                            <img src="<?= base_url($image) ?>" class="img-thumbnail" alt="">
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -76,7 +76,11 @@
                     <div class="col-md-3">
                         <div class="card h-100">
                             <?php if ($related['image']): ?>
-                                <img src="<?= esc($related['image']) ?>" class="card-img-top" alt="<?= esc($related['name']) ?>" style="height: 200px; object-fit: cover;">
+                                <img src="<?= base_url($related['image']) ?>" class="card-img-top" alt="<?= esc($related['name']) ?>" style="height: 200px; object-fit: cover;">
+                            <?php else: ?>
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <span class="text-muted">No Image</span>
+                                </div>
                             <?php endif; ?>
                             <div class="card-body">
                                 <h5 class="card-title">

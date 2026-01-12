@@ -1,57 +1,464 @@
-## DevCart 
-is an eCommerce platform built with CodeIgniter 4, designed as a modular, extensible foundation for online stores.
-The project is currently under active development.
+# 🛒 DevCart - eCommerce Platform
 
-⚠️ Status: Early development — not production ready
+A modern, feature-rich eCommerce platform built with **CodeIgniter 4**, designed as a modular and extensible foundation for online stores.
 
-# Change Log
+![Status](https://img.shields.io/badge/status-active%20development-yellow)
+![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-blue)
+![CodeIgniter](https://img.shields.io/badge/CodeIgniter-4.x-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-= 0.0.5 =
-* centralized css and js to assets and cleaned inline front files
+---
 
-= 0.0.4 =
-* addapted project to bootstrap and jquery libraries
-* implemented basic admin and front functionalities
-* implemented register, login and logout functionalities
-* implemented cart adding feature
-* implemented checkout form page and order placing functionality
-* implemented admin features for category and product adding and editing
-* implemented dashboard stats
-* various ecommerce basic functionalities
+## 📋 Table of Contents
 
-= 0.0.1 =
-* bigbang of the project
+- [Features](#-features)
+- [Requirements](#-requirements)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Database Setup](#-database-setup)
+- [Usage](#-usage)
+- [Project Structure](#-project-structure)
+- [Tech Stack](#-tech-stack)
+- [Development](#-development)
+- [Changelog](#-changelog)
+- [Contributing](#-contributing)
+- [License](#-license)
 
+---
 
-# 🚀 Features (Planned & In Progress)
+## ✨ Features
 
-Modular eCommerce architecture
+### 🎯 Core Features (Implemented)
 
-Product catalog management
+- **Product Management**
+  - Full CRUD operations for products
+  - Product categories with hierarchical support
+  - Image uploads for products and categories
+  - Stock management
+  - Product variants (price, compare price, cost price)
+  - SEO-friendly URLs (slugs)
+  - Featured products
 
-Category & product pages
+- **Shopping Cart**
+  - Guest and registered user cart support
+  - Session-based cart for guests
+  - User-specific cart for logged-in users
+  - Real-time cart count updates
+  - Quantity management
 
-Shopping cart & checkout flow
+- **Checkout & Orders**
+  - Complete checkout process
+  - Billing and shipping address management
+  - Order tracking
+  - Order history for customers
+  - Order management for admins
 
-Order management system
+- **User Authentication**
+  - User registration
+  - Login/Logout
+  - Password reset functionality
+  - Role-based access control (Admin/Customer)
+  - Session management
 
-Customer accounts
+- **Admin Dashboard**
+  - Comprehensive admin panel
+  - Product management interface
+  - Category management
+  - Order management
+  - Dashboard statistics
+  - User management
 
-Admin dashboard
+- **Frontend**
+  - Responsive Bootstrap 5 design
+  - Modern, clean UI/UX
+  - Product catalog with search
+  - Category browsing
+  - Product detail pages
+  - Shopping cart interface
 
-Payment gateway integration (planned)
+### 🚀 Planned Features
 
-Shipping & tax configuration (planned)
+- Payment gateway integration (Stripe, PayPal)
+- Email notifications
+- Advanced shipping options
+- Tax calculation system
+- Product reviews and ratings
+- Wishlist functionality
+- Coupon/Discount system
+- Multi-currency support
+- Advanced reporting and analytics
+- Inventory alerts
+- Product image gallery
+- Advanced search and filtering
 
+---
 
-# 🛠️ Tech Stack
+## 📦 Requirements
 
-Framework: CodeIgniter 4
+- **PHP**: 8.0 or higher
+- **Database**: MySQL 5.7+ / MariaDB 10.3+
+- **Web Server**: Apache (with mod_rewrite) or Nginx
+- **Extensions**: 
+  - `intl`
+  - `mbstring`
+  - `openssl`
+  - `pdo`
+  - `pdo_mysql`
+  - `gd` (for image processing)
 
-Language: PHP 8+
+---
 
-Database: MySQL / MariaDB
+## 🚀 Installation
 
-Frontend: HTML5, CSS3, JavaScript
+### 1. Clone the Repository
 
-Server: Apache / Nginx
+```bash
+git clone https://github.com/yourusername/devcart.git
+cd devcart
+```
+
+### 2. Install Dependencies
+
+```bash
+composer install
+```
+
+### 3. Environment Setup
+
+Copy the environment file:
+
+```bash
+cp env .env
+```
+
+### 4. Configure Database
+
+Edit `.env` file and set your database credentials:
+
+```env
+database.default.hostname = localhost
+database.default.database = devcart_db
+database.default.username = your_username
+database.default.password = your_password
+database.default.DBDriver = MySQLi
+```
+
+### 5. Set Base URL
+
+Update the base URL in `.env`:
+
+```env
+app.baseURL = 'http://localhost:8080/'
+```
+
+Or in `app/Config/App.php`:
+
+```php
+public string $baseURL = 'http://localhost:8080/';
+```
+
+### 6. Set Encryption Key
+
+Generate a new encryption key:
+
+```bash
+php spark key:generate
+```
+
+Or manually set in `.env`:
+
+```env
+encryption.key = your-32-character-key-here
+```
+
+### 7. Set Writable Permissions
+
+```bash
+# Linux/Mac
+chmod -R 755 writable/
+chmod -R 755 public/uploads/
+
+# Windows (if needed)
+icacls writable /grant Users:F /T
+icacls public\uploads /grant Users:F /T
+```
+
+---
+
+## ⚙️ Configuration
+
+### Database Configuration
+
+1. Create a new MySQL database:
+
+```sql
+CREATE DATABASE devcart_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+2. Run migrations:
+
+```bash
+php spark migrate
+```
+
+This will create all necessary tables:
+- `users`
+- `categories`
+- `products`
+- `cart_items`
+- `orders`
+- `order_items`
+- `addresses`
+- `payments`
+
+### Create Admin User
+
+After running migrations, create an admin user manually in the database or through registration and update the role:
+
+```sql
+UPDATE users SET role = 'admin' WHERE email = 'admin@example.com';
+```
+
+---
+
+## 📖 Usage
+
+### Accessing the Application
+
+- **Frontend**: `http://localhost:8080/`
+- **Admin Panel**: `http://localhost:8080/admin` (requires admin login)
+
+### Default Admin Access
+
+1. Register a new account
+2. Update the user role in the database to `admin`
+3. Log in with admin credentials
+
+### Managing Products
+
+1. Navigate to **Admin → Products**
+2. Click **Add New Product**
+3. Fill in product details
+4. Upload product image
+5. Set pricing and inventory
+6. Save product
+
+### Managing Categories
+
+1. Navigate to **Admin → Categories**
+2. Click **Add Category**
+3. Set category name, slug, and description
+4. Optionally set a parent category for hierarchical structure
+5. Upload category image
+6. Save category
+
+### Shopping Flow
+
+1. Browse products on the homepage or category pages
+2. Click on a product to view details
+3. Add products to cart
+4. Proceed to checkout
+5. Fill in billing and shipping information
+6. Place order
+7. View order history in "My Orders"
+
+---
+
+## 📁 Project Structure
+
+```
+devcart/
+├── app/
+│   ├── Config/          # Configuration files
+│   ├── Controllers/      # Application controllers
+│   │   ├── AdminController.php
+│   │   ├── AuthController.php
+│   │   ├── CartController.php
+│   │   ├── CategoryController.php
+│   │   ├── CheckoutController.php
+│   │   ├── Home.php
+│   │   ├── OrderController.php
+│   │   └── ProductController.php
+│   ├── Database/
+│   │   └── Migrations/   # Database migrations
+│   ├── Filters/          # Request filters
+│   ├── Models/           # Data models
+│   │   ├── UserModel.php
+│   │   ├── ProductModel.php
+│   │   ├── CategoryModel.php
+│   │   ├── CartItemModel.php
+│   │   ├── OrderModel.php
+│   │   └── ...
+│   └── Views/            # View templates
+│       ├── templates/    # Header, footer
+│       ├── admin/        # Admin views
+│       ├── auth/         # Authentication views
+│       ├── products/     # Product views
+│       └── ...
+├── public/
+│   ├── assets/           # Static assets
+│   │   ├── bootstrap/   # Bootstrap CSS/JS
+│   │   ├── css/         # Custom CSS
+│   │   ├── js/          # Custom JavaScript
+│   │   └── jquery/      # jQuery library
+│   ├── uploads/         # Uploaded files
+│   │   ├── products/    # Product images
+│   │   └── categories/  # Category images
+│   └── index.php        # Entry point
+├── writable/            # Writable directories
+│   ├── cache/           # Cache files
+│   ├── logs/            # Log files
+│   └── session/         # Session files
+└── .env                 # Environment configuration
+```
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework**: CodeIgniter 4
+- **Language**: PHP 8.0+
+- **Database**: MySQL/MariaDB
+- **ORM**: CodeIgniter's built-in Query Builder
+
+### Frontend
+- **CSS Framework**: Bootstrap 5
+- **JavaScript**: Vanilla JS + jQuery 3.7.1
+- **Icons**: Bootstrap Icons (via Bootstrap)
+
+### Development Tools
+- **Composer**: Dependency management
+- **CodeIgniter CLI**: `php spark` commands
+- **Git**: Version control
+
+---
+
+## 🔧 Development
+
+### Running the Development Server
+
+```bash
+php spark serve
+```
+
+The application will be available at `http://localhost:8080`
+
+### Database Migrations
+
+```bash
+# Run migrations
+php spark migrate
+
+# Rollback last migration
+php spark migrate:rollback
+
+# Create new migration
+php spark make:migration MigrationName
+```
+
+### Code Style
+
+Follow PSR-12 coding standards and CodeIgniter 4 conventions.
+
+### Debugging
+
+Enable debug mode in `.env`:
+
+```env
+CI_ENVIRONMENT = development
+```
+
+Logs are available in `writable/logs/`
+
+---
+
+## 📝 Changelog
+
+### Version 0.0.6 (Current)
+- ✅ Fixed image upload database persistence issue
+- ✅ Fixed image URL display across all frontend views
+- ✅ All images now use `base_url()` for proper URL generation
+- ✅ Fixed subcategory image display on category pages
+- ✅ Added fallback "No Image" placeholders for better UX
+- ✅ Improved error handling in image upload process
+- ✅ Enhanced product and category save methods with better validation
+
+### Version 0.0.5
+- ✅ Centralized CSS and JS to assets directory
+- ✅ Removed inline styles and scripts from views
+- ✅ Implemented image upload system for products and categories
+- ✅ Created organized upload directory structure (`public/uploads/products/`, `public/uploads/categories/`)
+- ✅ Added image preview in admin forms
+- ✅ Implemented automatic image cleanup on delete
+- ✅ Added file validation (max 2MB, image types only)
+
+### Version 0.0.4
+- ✅ Adapted project to Bootstrap 5 and jQuery
+- ✅ Implemented basic admin and front functionalities
+- ✅ User registration, login, and logout
+- ✅ Shopping cart functionality
+- ✅ Checkout form and order placement
+- ✅ Admin features for category and product management
+- ✅ Dashboard statistics
+- ✅ Various eCommerce basic functionalities
+
+### Version 0.0.1
+- 🎉 Initial project setup
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Contribution Guidelines
+
+- Follow PSR-12 coding standards
+- Write clear commit messages
+- Add comments for complex logic
+- Update documentation as needed
+- Test your changes thoroughly
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Authors
+
+- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
+
+---
+
+## 🙏 Acknowledgments
+
+- CodeIgniter 4 framework
+- Bootstrap team for the excellent CSS framework
+- jQuery team
+- All contributors and users of this project
+
+---
+
+## 📞 Support
+
+For support, email support@devcart.com or open an issue on GitHub.
+
+---
+
+## ⚠️ Disclaimer
+
+This project is currently in **active development** and is **not production-ready**. Use at your own risk.
+
+---
+
+**Made with ❤️ using CodeIgniter 4**
