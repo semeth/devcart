@@ -117,30 +117,32 @@ class AdminController extends BaseController
             'sku' => 'required|alpha_numeric|max_length[100]' . ($id ? '|is_unique[products.sku,id,' . $id . ']' : '|is_unique[products.sku]'),
             'price' => 'required|decimal',
             'stock_quantity' => 'permit_empty|integer',
-            'image' => 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
         ];
 
-        // Make image validation optional
-        if (!$this->request->getFile('image')->isValid()) {
-            unset($rules['image']);
+        // Handle image upload first (before validation)
+        $imagePath = null;
+        $file = $this->request->getFile('image');
+        
+        // Check if file was uploaded
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            // Add image validation rules only if file is uploaded
+            $rules['image'] = 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/gif,image/webp]';
+        } elseif ($id) {
+            // Keep existing image if no new file uploaded
+            $existing = $this->productModel->find($id);
+            $imagePath = $existing['image'] ?? null;
         }
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $validation);
         }
 
-        // Handle image upload
-        $imagePath = null;
-        $file = $this->request->getFile('image');
+        // Process image upload if file was provided
         if ($file && $file->isValid() && !$file->hasMoved()) {
             $imagePath = $this->uploadImage($file, 'products');
             if (!$imagePath) {
                 return redirect()->back()->withInput()->with('error', 'Failed to upload image.');
             }
-        } elseif ($id) {
-            // Keep existing image if no new file uploaded
-            $existing = $this->productModel->find($id);
-            $imagePath = $existing['image'] ?? null;
         }
 
         $data = [
@@ -158,7 +160,6 @@ class AdminController extends BaseController
             'stock_status' => $this->request->getPost('stock_status') ?? 'in_stock',
             'weight' => $this->request->getPost('weight') ?: null,
             'dimensions' => $this->request->getPost('dimensions') ?: null,
-            'image' => $imagePath,
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
             'is_featured' => $this->request->getPost('is_featured') ? 1 : 0,
             'sort_order' => $this->request->getPost('sort_order') ?? 0,
@@ -166,11 +167,25 @@ class AdminController extends BaseController
             'meta_description' => $this->request->getPost('meta_description') ?: null,
         ];
 
+        // Only set image if we have a path (either new upload or existing)
+        if ($imagePath !== null) {
+            $data['image'] = $imagePath;
+        }
+
+        // Skip model validation since we already validated
+        $this->productModel->skipValidation(true);
+
         if ($id) {
-            $this->productModel->update($id, $data);
+            $result = $this->productModel->update($id, $data);
+            if (!$result) {
+                return redirect()->back()->withInput()->with('error', 'Failed to update product. ' . implode(', ', $this->productModel->errors()));
+            }
             $message = 'Product updated successfully.';
         } else {
-            $this->productModel->insert($data);
+            $result = $this->productModel->insert($data);
+            if (!$result) {
+                return redirect()->back()->withInput()->with('error', 'Failed to create product. ' . implode(', ', $this->productModel->errors()));
+            }
             $message = 'Product created successfully.';
         }
 
@@ -271,12 +286,20 @@ class AdminController extends BaseController
             'name' => 'required|min_length[2]|max_length[100]',
             'slug' => 'required|alpha_dash|max_length[100]' . ($id ? '|is_unique[categories.slug,id,' . $id . ']' : '|is_unique[categories.slug]'),
             'parent_id' => 'permit_empty|integer',
-            'image' => 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
         ];
 
-        // Make image validation optional
-        if (!$this->request->getFile('image')->isValid()) {
-            unset($rules['image']);
+        // Handle image upload first (before validation)
+        $imagePath = null;
+        $file = $this->request->getFile('image');
+        
+        // Check if file was uploaded
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            // Add image validation rules only if file is uploaded
+            $rules['image'] = 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/gif,image/webp]';
+        } elseif ($id) {
+            // Keep existing image if no new file uploaded
+            $existing = $this->categoryModel->find($id);
+            $imagePath = $existing['image'] ?? null;
         }
 
         if (!$this->validate($rules)) {
@@ -289,18 +312,12 @@ class AdminController extends BaseController
             return redirect()->back()->withInput()->with('error', 'A category cannot be its own parent.');
         }
 
-        // Handle image upload
-        $imagePath = null;
-        $file = $this->request->getFile('image');
+        // Process image upload if file was provided
         if ($file && $file->isValid() && !$file->hasMoved()) {
             $imagePath = $this->uploadImage($file, 'categories');
             if (!$imagePath) {
                 return redirect()->back()->withInput()->with('error', 'Failed to upload image.');
             }
-        } elseif ($id) {
-            // Keep existing image if no new file uploaded
-            $existing = $this->categoryModel->find($id);
-            $imagePath = $existing['image'] ?? null;
         }
 
         $data = [
@@ -308,18 +325,31 @@ class AdminController extends BaseController
             'slug' => $this->request->getPost('slug'),
             'description' => $this->request->getPost('description'),
             'parent_id' => $parentId,
-            'image' => $imagePath,
             'sort_order' => $this->request->getPost('sort_order') ?? 0,
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
             'meta_title' => $this->request->getPost('meta_title') ?: null,
             'meta_description' => $this->request->getPost('meta_description') ?: null,
         ];
 
+        // Only set image if we have a path (either new upload or existing)
+        if ($imagePath !== null) {
+            $data['image'] = $imagePath;
+        }
+
+        // Skip model validation since we already validated
+        $this->categoryModel->skipValidation(true);
+
         if ($id) {
-            $this->categoryModel->update($id, $data);
+            $result = $this->categoryModel->update($id, $data);
+            if (!$result) {
+                return redirect()->back()->withInput()->with('error', 'Failed to update category. ' . implode(', ', $this->categoryModel->errors()));
+            }
             $message = 'Category updated successfully.';
         } else {
-            $this->categoryModel->insert($data);
+            $result = $this->categoryModel->insert($data);
+            if (!$result) {
+                return redirect()->back()->withInput()->with('error', 'Failed to create category. ' . implode(', ', $this->categoryModel->errors()));
+            }
             $message = 'Category created successfully.';
         }
 

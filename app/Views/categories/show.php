@@ -25,7 +25,11 @@
                     <div class="col-md-4 col-lg-3">
                         <div class="card h-100">
                             <?php if ($child['image']): ?>
-                                <img src="<?= esc($child['image']) ?>" class="card-img-top" alt="<?= esc($child['name']) ?>" style="height: 200px; object-fit: cover;">
+                                <img src="<?= base_url($child['image']) ?>" class="card-img-top" alt="<?= esc($child['name']) ?>" style="height: 200px; object-fit: cover;">
+                            <?php else: ?>
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <span class="text-muted">No Image</span>
+                                </div>
                             <?php endif; ?>
                             <div class="card-body">
                                 <h5 class="card-title">
@@ -52,7 +56,11 @@
                 <div class="col-md-4 col-lg-3">
                     <div class="card h-100">
                         <?php if ($product['image']): ?>
-                            <img src="<?= esc($product['image']) ?>" class="card-img-top" alt="<?= esc($product['name']) ?>" style="height: 200px; object-fit: cover;">
+                            <img src="<?= base_url($product['image']) ?>" class="card-img-top" alt="<?= esc($product['name']) ?>" style="height: 200px; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">No Image</span>
+                            </div>
                         <?php endif; ?>
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">

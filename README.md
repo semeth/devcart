@@ -375,13 +375,23 @@ Logs are available in `writable/logs/`
 
 ## 📝 Changelog
 
-### Version 0.0.5 (Current)
+### Version 0.0.6 (Current)
+- ✅ Fixed image upload database persistence issue
+- ✅ Fixed image URL display across all frontend views
+- ✅ All images now use `base_url()` for proper URL generation
+- ✅ Fixed subcategory image display on category pages
+- ✅ Added fallback "No Image" placeholders for better UX
+- ✅ Improved error handling in image upload process
+- ✅ Enhanced product and category save methods with better validation
+
+### Version 0.0.5
 - ✅ Centralized CSS and JS to assets directory
 - ✅ Removed inline styles and scripts from views
 - ✅ Implemented image upload system for products and categories
-- ✅ Created organized upload directory structure
+- ✅ Created organized upload directory structure (`public/uploads/products/`, `public/uploads/categories/`)
 - ✅ Added image preview in admin forms
 - ✅ Implemented automatic image cleanup on delete
+- ✅ Added file validation (max 2MB, image types only)
 
 ### Version 0.0.4
 - ✅ Adapted project to Bootstrap 5 and jQuery
