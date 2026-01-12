@@ -6,6 +6,7 @@ use App\Models\CartItemModel;
 use App\Models\OrderModel;
 use App\Models\AddressModel;
 use App\Models\ProductModel;
+use App\Services\ExtensionManager;
 
 class CheckoutController extends BaseController
 {
@@ -13,6 +14,7 @@ class CheckoutController extends BaseController
     protected $orderModel;
     protected $addressModel;
     protected $productModel;
+    protected $extensionManager;
 
     public function __construct()
     {
@@ -20,6 +22,7 @@ class CheckoutController extends BaseController
         $this->orderModel = new OrderModel();
         $this->addressModel = new AddressModel();
         $this->productModel = new ProductModel();
+        $this->extensionManager = \Config\Services::extensionManager();
     }
 
     /**
@@ -55,9 +58,59 @@ class CheckoutController extends BaseController
             $shippingAddress = $this->addressModel->getShippingAddress($userId);
         }
 
-        // Calculate totals
+        // Calculate subtotal
         $subtotal = $this->cartModel->getCartTotal($userId, $sessionId);
-        $totals = $this->orderModel->calculateTotals($subtotal, 0, 0, 0); // Tax and shipping would be calculated here
+        
+        // Prepare cart data for extensions
+        $cartData = [
+            'items' => $cartItems,
+            'subtotal' => $subtotal,
+        ];
+        
+        // Prepare address data (use billing address as default for shipping calculation)
+        $addressData = [
+            'country' => $billingAddress['country'] ?? 'United States',
+            'state' => $billingAddress['state'] ?? '',
+            'city' => $billingAddress['city'] ?? '',
+            'postal_code' => $billingAddress['postal_code'] ?? '',
+        ];
+        
+        // Get active shipping extensions
+        $shippingExtensions = $this->extensionManager->getShippingExtensions(true);
+        $shippingOptions = [];
+        
+        foreach ($shippingExtensions as $extension) {
+            if ($extension->isActive() && $extension->isAvailableForAddress($addressData)) {
+                $options = $extension->getAvailableOptions($cartData, $addressData);
+                foreach ($options as $option) {
+                    $shippingOptions[] = [
+                        'extension_code' => $extension->getCode(),
+                        'code' => $option['code'] ?? $extension->getCode(),
+                        'name' => $option['name'] ?? $extension->getName(),
+                        'cost' => $option['cost'] ?? 0,
+                        'estimated_days' => $option['estimated_days'] ?? null,
+                        'description' => $extension->getDescription(),
+                    ];
+                }
+            }
+        }
+        
+        // Get active payment extensions
+        $paymentExtensions = $this->extensionManager->getPaymentExtensions(true);
+        $paymentOptions = [];
+        
+        foreach ($paymentExtensions as $extension) {
+            if ($extension->isActive()) {
+                $paymentOptions[] = [
+                    'code' => $extension->getCode(),
+                    'name' => $extension->getName(),
+                    'description' => $extension->getDescription(),
+                ];
+            }
+        }
+        
+        // Default totals (will be updated by JavaScript when shipping is selected)
+        $totals = $this->orderModel->calculateTotals($subtotal, 0, 0, 0);
 
         $data = [
             'title' => 'Checkout',
@@ -66,6 +119,9 @@ class CheckoutController extends BaseController
             'billingAddress' => $billingAddress,
             'shippingAddress' => $shippingAddress,
             'totals' => $totals,
+            'subtotal' => $subtotal,
+            'shippingOptions' => $shippingOptions,
+            'paymentOptions' => $paymentOptions,
             'user' => $this->getUser(),
         ];
 

@@ -1,14 +1,12 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Manage Products</h1>
         <a href="<?= site_url('admin/products/new') ?>" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add New Product
+            <span class="icon">➕</span> Add New Product
         </a>
     </div>
-
-    <a href="<?= site_url('admin') ?>" class="btn btn-secondary mb-3">← Back to Dashboard</a>
 
     <?php if (empty($products)): ?>
         <div class="alert alert-info">
@@ -57,4 +55,6 @@
     <?php endif; ?>
 </div>
 
-<?= $this->include('templates/footer') ?>
+</div>
+
+<?= $this->include('admin/templates/footer') ?>

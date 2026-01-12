@@ -7,6 +7,9 @@ use App\Models\CategoryModel;
 use App\Models\OrderModel;
 use App\Models\UserModel;
 use App\Models\PaymentModel;
+use App\Models\ExtensionModel;
+use App\Models\ExtensionSettingModel;
+use App\Services\ExtensionManager;
 
 class AdminController extends BaseController
 {
@@ -15,6 +18,9 @@ class AdminController extends BaseController
     protected $orderModel;
     protected $userModel;
     protected $paymentModel;
+    protected $extensionModel;
+    protected $extensionSettingModel;
+    protected $extensionManager;
 
     public function __construct()
     {
@@ -23,6 +29,9 @@ class AdminController extends BaseController
         $this->orderModel = new OrderModel();
         $this->userModel = new UserModel();
         $this->paymentModel = new PaymentModel();
+        $this->extensionModel = new ExtensionModel();
+        $this->extensionSettingModel = new ExtensionSettingModel();
+        $this->extensionManager = \Config\Services::extensionManager();
     }
 
     /**
@@ -230,13 +239,19 @@ class AdminController extends BaseController
 
         $categories = $this->categoryModel->findAll();
         
-        // Load parent names for each category
+        // Load full hierarchy path for each category
         foreach ($categories as &$category) {
             if ($category['parent_id']) {
-                $parent = $this->categoryModel->find($category['parent_id']);
-                $category['parent_name'] = $parent ? $parent['name'] : null;
+                $category['hierarchy_path'] = $this->categoryModel->getCategoryPath($category['id']);
+            } else {
+                $category['hierarchy_path'] = $category['name'];
             }
         }
+        
+        // Sort by hierarchy path (which includes full path for subcategories)
+        usort($categories, function($a, $b) {
+            return strcmp($a['hierarchy_path'] ?? $a['name'], $b['hierarchy_path'] ?? $b['name']);
+        });
 
         $data = [
             'title' => 'Manage Categories',
@@ -524,5 +539,129 @@ class AdminController extends BaseController
         }
 
         return redirect()->to('/admin/orders/' . $orderNumber)->with('success', 'Order updated successfully.');
+    }
+
+    /**
+     * Extensions management - list all extensions
+     */
+    public function extensions()
+    {
+        $this->requireAdmin();
+
+        $type = $this->request->getGet('type') ?? 'all'; // all, payment, shipping
+
+        $extensions = [];
+        if ($type === 'all' || $type === 'payment') {
+            $extensions['payment'] = $this->extensionModel->getByType('payment');
+        }
+        if ($type === 'all' || $type === 'shipping') {
+            $extensions['shipping'] = $this->extensionModel->getByType('shipping');
+        }
+
+        $data = [
+            'title' => 'Manage Extensions',
+            'extensions' => $extensions,
+            'currentType' => $type,
+        ];
+
+        return view('admin/extensions/index', $data);
+    }
+
+    /**
+     * Configure extension
+     */
+    public function extensionConfigure($type, $code)
+    {
+        $this->requireAdmin();
+
+        $extension = $this->extensionModel->findByTypeAndCode($type, $code);
+        if (!$extension) {
+            return redirect()->to('/admin/extensions')->with('error', 'Extension not found.');
+        }
+
+        // Get extension instance
+        $extensionInstance = $this->extensionManager->getExtension($type, $code);
+        if (!$extensionInstance) {
+            return redirect()->to('/admin/extensions')->with('error', 'Extension class not found.');
+        }
+
+        // Get current settings
+        $settings = $this->extensionSettingModel->getByExtensionId($extension['id']);
+
+        // Get settings schema
+        $schema = $extensionInstance->getSettingsSchema();
+
+        // Handle form submission
+        if ($this->request->getMethod() === 'post') {
+            $postData = $this->request->getPost();
+
+            // Validate settings
+            $errors = $extensionInstance->validateSettings($postData);
+            if (!empty($errors)) {
+                return redirect()->back()->withInput()->with('errors', $errors);
+            }
+
+            // Save settings
+            $encryptedKeys = [];
+            foreach ($schema as $field) {
+                if (isset($field['encrypted']) && $field['encrypted']) {
+                    $encryptedKeys[] = $field['key'];
+                }
+            }
+
+            // Also check for common encrypted keys
+            $commonEncrypted = ['api_key', 'secret_key', 'password', 'private_key', 'webhook_secret'];
+            foreach ($commonEncrypted as $key) {
+                if (isset($postData[$key]) && !in_array($key, $encryptedKeys)) {
+                    $encryptedKeys[] = $key;
+                }
+            }
+
+            $this->extensionSettingModel->setSettings($extension['id'], $postData, $encryptedKeys);
+
+            // Update extension active status if provided
+            if (isset($postData['is_active'])) {
+                $this->extensionModel->update($extension['id'], [
+                    'is_active' => $postData['is_active'] ? 1 : 0,
+                ]);
+            }
+
+            // Clear extension cache
+            $this->extensionManager->clearCache($type);
+
+            return redirect()->to('/admin/extensions')->with('success', 'Extension configured successfully.');
+        }
+
+        $data = [
+            'title' => 'Configure: ' . $extension['name'],
+            'extension' => $extension,
+            'extensionInstance' => $extensionInstance,
+            'settings' => $settings,
+            'schema' => $schema,
+        ];
+
+        return view('admin/extensions/configure', $data);
+    }
+
+    /**
+     * Toggle extension active status
+     */
+    public function extensionToggle($type, $code)
+    {
+        $this->requireAdmin();
+
+        $extension = $this->extensionModel->findByTypeAndCode($type, $code);
+        if (!$extension) {
+            return redirect()->to('/admin/extensions')->with('error', 'Extension not found.');
+        }
+
+        $newStatus = $extension['is_active'] ? 0 : 1;
+        $this->extensionModel->update($extension['id'], ['is_active' => $newStatus]);
+
+        // Clear extension cache
+        $this->extensionManager->clearCache($type);
+
+        $message = $newStatus ? 'Extension enabled successfully.' : 'Extension disabled successfully.';
+        return redirect()->back()->with('success', $message);
     }
 }

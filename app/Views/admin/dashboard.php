@@ -1,6 +1,6 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <h1 class="mb-4">Admin Dashboard</h1>
 
     <div class="row g-4 mb-5">
@@ -74,11 +74,6 @@
         </div>
     <?php endif; ?>
 
-    <div class="mt-4">
-        <a href="<?= site_url('admin/products') ?>" class="btn btn-primary">Manage Products</a>
-        <a href="<?= site_url('admin/categories') ?>" class="btn btn-primary">Manage Categories</a>
-        <a href="<?= site_url('admin/orders') ?>" class="btn btn-primary">Manage Orders</a>
-    </div>
 </div>
 
-<?= $this->include('templates/footer') ?>
+<?= $this->include('admin/templates/footer') ?>

@@ -1,11 +1,10 @@
-<?= $this->include('templates/header') ?>
+<?= $this->include('admin/templates/header') ?>
 
-<div class="container mt-4">
+<div class="admin-content">
     <div class="row">
         <div class="col-12">
             <h1 class="mb-4"><?= $product ? 'Edit Product' : 'Add New Product' ?></h1>
             
-            <a href="<?= site_url('admin/products') ?>" class="btn btn-secondary mb-3">← Back to Products</a>
 
             <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -221,4 +220,6 @@
     </div>
 </div>
 
-<?= $this->include('templates/footer') ?>
+</div>
+
+<?= $this->include('admin/templates/footer') ?>

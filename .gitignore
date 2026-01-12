@@ -124,3 +124,15 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+#-------------------------
+# Documentation & Planning Files (Not for version control)
+#-------------------------
+ROADMAP*.md
+EXTENSION*.md
+
+#-------------------------
+# SQL Seed Files
+#-------------------------
+*_seed*.sql
+extensions_seed*.sql
