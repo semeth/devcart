@@ -122,4 +122,27 @@ class CategoryModel extends Model
     {
         return $this->where('parent_id', $categoryId)->countAllResults() > 0;
     }
+
+    /**
+     * Get all descendant category IDs (including nested subcategories)
+     * Returns an array of category IDs including the parent and all children recursively
+     */
+    public function getAllDescendantIds(int $categoryId): array
+    {
+        $categoryIds = [$categoryId]; // Include the parent category itself
+        
+        // Get direct children
+        $children = $this->where('parent_id', $categoryId)
+                        ->where('is_active', 1)
+                        ->findAll();
+        
+        // Recursively get children of children
+        foreach ($children as $child) {
+            $categoryIds[] = $child['id'];
+            $descendants = $this->getAllDescendantIds($child['id']);
+            $categoryIds = array_merge($categoryIds, $descendants);
+        }
+        
+        return array_unique($categoryIds);
+    }
 }

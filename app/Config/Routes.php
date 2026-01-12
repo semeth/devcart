@@ -48,8 +48,8 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->get('products', 'AdminController::products');
     $routes->get('products/new', 'AdminController::productForm');
     $routes->get('products/edit/(:num)', 'AdminController::productForm/$1');
-    $routes->post('products/save', 'AdminController::productSave');
     $routes->post('products/save/(:num)', 'AdminController::productSave/$1');
+    $routes->post('products/save', 'AdminController::productSave');
     $routes->get('products/delete/(:num)', 'AdminController::productDelete/$1');
     $routes->get('categories', 'AdminController::categories');
     $routes->get('categories/new', 'AdminController::categoryForm');
@@ -58,6 +58,8 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->post('categories/save/(:num)', 'AdminController::categorySave/$1');
     $routes->get('categories/delete/(:num)', 'AdminController::categoryDelete/$1');
     $routes->get('orders', 'AdminController::orders');
+    $routes->get('orders/(:segment)', 'AdminController::orderShow/$1');
+    $routes->post('orders/(:segment)/update', 'AdminController::orderUpdateStatus/$1');
 });
 
 // Legacy routes (can be removed if not needed)

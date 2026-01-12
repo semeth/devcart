@@ -7,6 +7,20 @@
             
             <a href="<?= site_url('admin/products') ?>" class="btn btn-secondary mb-3">← Back to Products</a>
 
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashdata('error') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?= session()->getFlashdata('success') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <form method="post" action="<?= site_url('admin/products/save' . ($product ? '/' . $product['id'] : '')) ?>" enctype="multipart/form-data">
                 <?= csrf_field() ?>
                 

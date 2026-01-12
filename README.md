@@ -375,7 +375,19 @@ Logs are available in `writable/logs/`
 
 ## 📝 Changelog
 
-### Version 0.0.6 (Current)
+### Version 0.0.10 (Current)
+- ✅ Fixed product CRUD operations (add/update) to match category functionality
+- ✅ Fixed product image upload and database update synchronization
+- ✅ Updated SKU validation to allow colons, dashes, and underscores (`regex_match[/^[a-zA-Z0-9\-_:]+$/]`)
+- ✅ Implemented recursive category traversal - products from subcategories now display on parent category pages
+- ✅ Fixed route ordering for product save operations (prioritized specific route over general)
+- ✅ Improved validation error display in admin product forms
+- ✅ Cleaned up debug logging and temporary files
+- ✅ Aligned product save logic with working category save implementation
+- ✅ Added `getAllDescendantIds()` method to CategoryModel for recursive category fetching
+- ✅ Added `getByCategories()` method to ProductModel for multi-category product queries
+
+### Version 0.0.6
 - ✅ Fixed image upload database persistence issue
 - ✅ Fixed image URL display across all frontend views
 - ✅ All images now use `base_url()` for proper URL generation

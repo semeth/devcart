@@ -33,7 +33,7 @@
                                     <td><span class="badge bg-success"><?= esc(ucfirst($order['payment_status'])) ?></span></td>
                                     <td>$<?= number_format($order['total_amount'], 2) ?></td>
                                     <td>
-                                        <a href="<?= site_url('orders/' . $order['order_number']) ?>" class="btn btn-sm btn-primary">View</a>
+                                        <a href="<?= site_url('admin/orders/' . $order['order_number']) ?>" class="btn btn-sm btn-primary">View</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
