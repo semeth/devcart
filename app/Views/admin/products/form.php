@@ -7,7 +7,7 @@
             
             <a href="<?= site_url('admin/products') ?>" class="btn btn-secondary mb-3">← Back to Products</a>
 
-            <form method="post" action="<?= site_url('admin/products/save' . ($product ? '/' . $product['id'] : '')) ?>">
+            <form method="post" action="<?= site_url('admin/products/save' . ($product ? '/' . $product['id'] : '')) ?>" enctype="multipart/form-data">
                 <?= csrf_field() ?>
                 
                 <div class="row">
@@ -160,8 +160,18 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="image" class="form-label">Product Image URL</label>
-                                    <input type="text" class="form-control" id="image" name="image" value="<?= old('image', $product['image'] ?? '') ?>" placeholder="https://example.com/image.jpg">
+                                    <label for="image" class="form-label">Product Image</label>
+                                    <?php if (!empty($product['image'])): ?>
+                                        <div class="mb-2">
+                                            <img src="<?= base_url($product['image']) ?>" alt="Current image" class="img-thumbnail" style="max-height: 150px;">
+                                            <p class="small text-muted mt-1">Current image</p>
+                                        </div>
+                                    <?php endif; ?>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <small class="form-text text-muted">Upload a new image or leave empty to keep current image. Allowed: JPG, PNG, GIF, WebP</small>
+                                    <?php if (isset($validation) && $validation->hasError('image')): ?>
+                                        <div class="text-danger small"><?= $validation->getError('image') ?></div>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="mb-3">

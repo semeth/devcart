@@ -117,10 +117,30 @@ class AdminController extends BaseController
             'sku' => 'required|alpha_numeric|max_length[100]' . ($id ? '|is_unique[products.sku,id,' . $id . ']' : '|is_unique[products.sku]'),
             'price' => 'required|decimal',
             'stock_quantity' => 'permit_empty|integer',
+            'image' => 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
         ];
+
+        // Make image validation optional
+        if (!$this->request->getFile('image')->isValid()) {
+            unset($rules['image']);
+        }
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $validation);
+        }
+
+        // Handle image upload
+        $imagePath = null;
+        $file = $this->request->getFile('image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $imagePath = $this->uploadImage($file, 'products');
+            if (!$imagePath) {
+                return redirect()->back()->withInput()->with('error', 'Failed to upload image.');
+            }
+        } elseif ($id) {
+            // Keep existing image if no new file uploaded
+            $existing = $this->productModel->find($id);
+            $imagePath = $existing['image'] ?? null;
         }
 
         $data = [
@@ -138,7 +158,7 @@ class AdminController extends BaseController
             'stock_status' => $this->request->getPost('stock_status') ?? 'in_stock',
             'weight' => $this->request->getPost('weight') ?: null,
             'dimensions' => $this->request->getPost('dimensions') ?: null,
-            'image' => $this->request->getPost('image') ?: null,
+            'image' => $imagePath,
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
             'is_featured' => $this->request->getPost('is_featured') ? 1 : 0,
             'sort_order' => $this->request->getPost('sort_order') ?? 0,
@@ -167,6 +187,11 @@ class AdminController extends BaseController
         $product = $this->productModel->find($id);
         if (!$product) {
             return redirect()->to('/admin/products')->with('error', 'Product not found.');
+        }
+
+        // Delete associated image if exists
+        if (!empty($product['image']) && file_exists(ROOTPATH . 'public/' . $product['image'])) {
+            unlink(ROOTPATH . 'public/' . $product['image']);
         }
 
         $this->productModel->delete($id);
@@ -246,7 +271,13 @@ class AdminController extends BaseController
             'name' => 'required|min_length[2]|max_length[100]',
             'slug' => 'required|alpha_dash|max_length[100]' . ($id ? '|is_unique[categories.slug,id,' . $id . ']' : '|is_unique[categories.slug]'),
             'parent_id' => 'permit_empty|integer',
+            'image' => 'uploaded[image]|max_size[image,2048]|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
         ];
+
+        // Make image validation optional
+        if (!$this->request->getFile('image')->isValid()) {
+            unset($rules['image']);
+        }
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('validation', $validation);
@@ -258,12 +289,26 @@ class AdminController extends BaseController
             return redirect()->back()->withInput()->with('error', 'A category cannot be its own parent.');
         }
 
+        // Handle image upload
+        $imagePath = null;
+        $file = $this->request->getFile('image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $imagePath = $this->uploadImage($file, 'categories');
+            if (!$imagePath) {
+                return redirect()->back()->withInput()->with('error', 'Failed to upload image.');
+            }
+        } elseif ($id) {
+            // Keep existing image if no new file uploaded
+            $existing = $this->categoryModel->find($id);
+            $imagePath = $existing['image'] ?? null;
+        }
+
         $data = [
             'name' => $this->request->getPost('name'),
             'slug' => $this->request->getPost('slug'),
             'description' => $this->request->getPost('description'),
             'parent_id' => $parentId,
-            'image' => $this->request->getPost('image') ?: null,
+            'image' => $imagePath,
             'sort_order' => $this->request->getPost('sort_order') ?? 0,
             'is_active' => $this->request->getPost('is_active') ? 1 : 0,
             'meta_title' => $this->request->getPost('meta_title') ?: null,
@@ -298,8 +343,46 @@ class AdminController extends BaseController
             return redirect()->to('/admin/categories')->with('error', 'Cannot delete category with subcategories. Please delete or move subcategories first.');
         }
 
+        // Delete associated image if exists
+        if (!empty($category['image']) && file_exists(ROOTPATH . 'public/' . $category['image'])) {
+            unlink(ROOTPATH . 'public/' . $category['image']);
+        }
+
         $this->categoryModel->delete($id);
         return redirect()->to('/admin/categories')->with('success', 'Category deleted successfully.');
+    }
+
+    /**
+     * Upload image file
+     * 
+     * @param \CodeIgniter\HTTP\Files\UploadedFile $file
+     * @param string $folder Folder name (products, categories, etc.)
+     * @return string|null Relative path to uploaded file or null on failure
+     */
+    protected function uploadImage($file, $folder = 'uploads')
+    {
+        if (!$file || !$file->isValid()) {
+            return null;
+        }
+
+        $uploadPath = ROOTPATH . 'public/uploads/' . $folder . '/';
+        
+        // Create directory if it doesn't exist
+        if (!is_dir($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
+        }
+
+        // Generate unique filename
+        $newName = $file->getRandomName();
+        $extension = $file->getExtension();
+        
+        // Move file
+        if ($file->move($uploadPath, $newName)) {
+            // Return relative path from public directory
+            return 'uploads/' . $folder . '/' . $newName;
+        }
+
+        return null;
     }
 
     /**
