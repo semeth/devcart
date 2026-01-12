@@ -149,6 +149,27 @@ class ProductModel extends Model
     }
 
     /**
+     * Get products by multiple category IDs (including subcategories)
+     */
+    public function getByCategories(array $categoryIds, int $limit = null)
+    {
+        if (empty($categoryIds)) {
+            return [];
+        }
+        
+        $builder = $this->whereIn('category_id', $categoryIds)
+                        ->where('is_active', 1)
+                        ->orderBy('sort_order', 'ASC')
+                        ->orderBy('name', 'ASC');
+        
+        if ($limit) {
+            $builder->limit($limit);
+        }
+        
+        return $builder->findAll();
+    }
+
+    /**
      * Get products with category relationship
      */
     public function getWithCategory(int $productId)

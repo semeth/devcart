@@ -27,8 +27,9 @@ class CategoryController extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        // Get products in this category
-        $products = $this->productModel->getByCategory($category['id']);
+        // Get products in this category and all subcategories
+        $categoryIds = $this->categoryModel->getAllDescendantIds($category['id']);
+        $products = $this->productModel->getByCategories($categoryIds);
 
         // Get child categories
         $childCategories = $this->categoryModel->getChildCategories($category['id']);

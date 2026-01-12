@@ -92,11 +92,17 @@ class AdminController extends BaseController
 
         $categories = $this->categoryModel->getActiveCategories();
 
+        // Get validation from flashdata if available (from redirect back)
+        $validation = session()->getFlashdata('validation');
+        if (!$validation) {
+            $validation = \Config\Services::validation();
+        }
+
         $data = [
             'title' => $id ? 'Edit Product' : 'Add Product',
             'product' => $product,
             'categories' => $categories,
-            'validation' => \Config\Services::validation(),
+            'validation' => $validation,
         ];
 
         return view('admin/products/form', $data);
@@ -114,7 +120,7 @@ class AdminController extends BaseController
         $rules = [
             'name' => 'required|min_length[2]|max_length[255]',
             'slug' => 'required|alpha_dash|max_length[255]' . ($id ? '|is_unique[products.slug,id,' . $id . ']' : '|is_unique[products.slug]'),
-            'sku' => 'required|alpha_numeric|max_length[100]' . ($id ? '|is_unique[products.sku,id,' . $id . ']' : '|is_unique[products.sku]'),
+            'sku' => 'required|regex_match[/^[a-zA-Z0-9\-_:]+$/]|max_length[100]' . ($id ? '|is_unique[products.sku,id,' . $id . ']' : '|is_unique[products.sku]'),
             'price' => 'required|decimal',
             'stock_quantity' => 'permit_empty|integer',
         ];
@@ -134,7 +140,9 @@ class AdminController extends BaseController
         }
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('validation', $validation);
+            // Store validation in session for display
+            session()->setFlashdata('validation', $validation);
+            return redirect()->back()->withInput();
         }
 
         // Process image upload if file was provided
@@ -303,7 +311,9 @@ class AdminController extends BaseController
         }
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('validation', $validation);
+            // Store validation in session for display
+            session()->setFlashdata('validation', $validation);
+            return redirect()->back()->withInput();
         }
 
         // Prevent category from being its own parent
@@ -399,12 +409,18 @@ class AdminController extends BaseController
         
         // Create directory if it doesn't exist
         if (!is_dir($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
+            if (!mkdir($uploadPath, 0755, true)) {
+                return null;
+            }
+        }
+
+        // Check if directory is writable
+        if (!is_writable($uploadPath)) {
+            return null;
         }
 
         // Generate unique filename
         $newName = $file->getRandomName();
-        $extension = $file->getExtension();
         
         // Move file
         if ($file->move($uploadPath, $newName)) {
@@ -430,5 +446,83 @@ class AdminController extends BaseController
         ];
 
         return view('admin/orders/index', $data);
+    }
+
+    /**
+     * Show order details (Admin view)
+     */
+    public function orderShow($orderNumber)
+    {
+        $this->requireAdmin();
+
+        $order = $this->orderModel->findByOrderNumber($orderNumber);
+
+        if (!$order) {
+            return redirect()->to('/admin/orders')->with('error', 'Order not found.');
+        }
+
+        $orderDetails = $this->orderModel->getOrderDetails($order['id']);
+
+        // Get user information if order has a user
+        $user = null;
+        if ($order['user_id']) {
+            $user = $this->userModel->find($order['user_id']);
+        }
+
+        $data = [
+            'title' => 'Order #' . $orderNumber,
+            'order' => $orderDetails,
+            'user' => $user,
+        ];
+
+        return view('admin/orders/show', $data);
+    }
+
+    /**
+     * Update order status
+     */
+    public function orderUpdateStatus($orderNumber)
+    {
+        $this->requireAdmin();
+
+        $order = $this->orderModel->findByOrderNumber($orderNumber);
+        if (!$order) {
+            return redirect()->to('/admin/orders')->with('error', 'Order not found.');
+        }
+
+        $status = $this->request->getPost('status');
+        $paymentStatus = $this->request->getPost('payment_status');
+        $notes = $this->request->getPost('notes');
+
+        $updateData = [];
+        
+        if ($status && in_array($status, ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'])) {
+            $updateData['status'] = $status;
+            
+            // Set shipped_at when status changes to shipped
+            if ($status === 'shipped' && $order['status'] !== 'shipped') {
+                $updateData['shipped_at'] = date('Y-m-d H:i:s');
+            }
+            
+            // Set delivered_at when status changes to delivered
+            if ($status === 'delivered' && $order['status'] !== 'delivered') {
+                $updateData['delivered_at'] = date('Y-m-d H:i:s');
+            }
+        }
+
+        if ($paymentStatus && in_array($paymentStatus, ['pending', 'paid', 'failed', 'refunded'])) {
+            $updateData['payment_status'] = $paymentStatus;
+        }
+
+        if ($notes !== null) {
+            $updateData['notes'] = $notes;
+        }
+
+        if (!empty($updateData)) {
+            $this->orderModel->skipValidation(true);
+            $this->orderModel->update($order['id'], $updateData);
+        }
+
+        return redirect()->to('/admin/orders/' . $orderNumber)->with('success', 'Order updated successfully.');
     }
 }
