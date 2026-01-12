@@ -2,31 +2,39 @@
 
 <h1>Admin Dashboard</h1>
 
-<div class="grid" style="margin-top: 2rem;">
-    <div class="card">
-        <div class="card-body">
-            <h3>Total Products</h3>
-            <p style="font-size: 2rem; font-weight: bold; color: #3498db;"><?= $stats['total_products'] ?></p>
-            <p><small>Active: <?= $stats['active_products'] ?></small></p>
+<div class="row" style="margin-top: 2rem;">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3>Total Products</h3>
+                <p class="text-info fs-2 fw-bold"><?= $stats['total_products'] ?></p>
+                <p><small>Active: <?= $stats['active_products'] ?></small></p>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h3>Total Orders</h3>
-            <p style="font-size: 2rem; font-weight: bold; color: #27ae60;"><?= $stats['total_orders'] ?></p>
-            <p><small>Pending: <?= $stats['pending_orders'] ?></small></p>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3>Total Orders</h3>
+                <p class="text-success fs-2 fw-bold"><?= $stats['total_orders'] ?></p>
+                <p><small>Pending: <?= $stats['pending_orders'] ?></small></p>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h3>Total Users</h3>
-            <p style="font-size: 2rem; font-weight: bold; color: #e74c3c;"><?= $stats['total_users'] ?></p>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3>Total Users</h3>
+                <p class="text-danger fs-2 fw-bold"><?= $stats['total_users'] ?></p>
+            </div>
         </div>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h3>Total Revenue</h3>
-            <p style="font-size: 2rem; font-weight: bold; color: #9b59b6;">$<?= number_format($stats['total_revenue'], 2) ?></p>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3>Total Revenue</h3>
+                <p class="text-warning fs-2 fw-bold">$<?= number_format($stats['total_revenue'], 2) ?></p>
+            </div>
         </div>
     </div>
 </div>
