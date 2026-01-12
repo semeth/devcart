@@ -430,13 +430,13 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project uses the same license as CodeIgniter 4 (MIT License). See the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 👥 Authors
 
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
+- **Andrei Dumitru** - *Initial work* - [semeth](https://github.com/semeth)
 
 ---
 
@@ -451,13 +451,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email support@devcart.com or open an issue on GitHub.
+For support, email **thesemeth@gmail.com**. 
+
+**Response Time**: We aim to respond within 24-48 hours.
+
+**Note**: Additional support channels (GitHub Issues, Discord, etc.) will be added when the project launches.
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is currently in **active development** and is **not production-ready**. Use at your own risk.
+This project is currently in **active development** and is **not production-ready**. 
+
+While you are free to use this project, please be aware that:
+- It is still under active development
+- Features may change or be incomplete
+- It is recommended for development and testing purposes only
+- Use at your own risk
+
+A production-ready release and live demo are expected with version 0.8.0.
 
 ---
 
