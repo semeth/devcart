@@ -165,10 +165,4 @@
     </form>
 </div>
 
-<script>
-function toggleShipping(checkbox) {
-    document.getElementById('shipping-fields').style.display = checkbox.checked ? 'none' : 'block';
-}
-</script>
-
 <?= $this->include('templates/footer') ?>

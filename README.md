@@ -6,6 +6,9 @@ The project is currently under active development.
 
 # Change Log
 
+= 0.0.5 =
+* centralized css and js to assets and cleaned inline front files
+
 = 0.0.4 =
 * addapted project to bootstrap and jquery libraries
 * implemented basic admin and front functionalities
