@@ -4,6 +4,21 @@ The project is currently under active development.
 
 ⚠️ Status: Early development — not production ready
 
+# Change Log
+
+= 0.0.4 =
+* addapted project to bootstrap and jquery libraries
+* implemented basic admin and front functionalities
+* implemented register, login and logout functionalities
+* implemented cart adding feature
+* implemented checkout form page and order placing functionality
+* implemented admin features for category and product adding and editing
+* implemented dashboard stats
+* various ecommerce basic functionalities
+
+= 0.0.1 =
+* bigbang of the project
+
 
 # 🚀 Features (Planned & In Progress)
 
